@@ -131,7 +131,7 @@ These constraints are acknowledged and treated as part of a controlled proof-of-
 
 ## 11. Author
 
-**Juan Pablo**
+**Juan Pablo Quezada**
 B.Sc. in Intelligent Computing Engineering
 Universidad Autónoma de Aguascalientes (UAA)
 
