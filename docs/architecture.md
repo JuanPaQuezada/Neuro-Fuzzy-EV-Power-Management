@@ -150,6 +150,54 @@ This abstraction decouples sensor-level variability from control logic, while pr
 - The use of trapezoidal functions for extreme behaviors (Smooth and Aggressive) improves robustness against noise.
 - The neuro-fuzzy system leverages this varia
 
+### 4.4 Output Variable: State of Power (SOP) Limit
+
+**Domain:**  
+- Normalized range: [0, 1]
+
+The output of the neuro-fuzzy inference system is a **State of Power (SOP) limit**, representing the maximum allowable power that the battery system can safely deliver or absorb under current operating conditions.
+
+Rather than commanding power directly, the controller provides a supervisory power envelope, which can be enforced by lower-level control and protection layers within the BMS.
+
+---
+
+#### Linguistic Labels
+- {Limited, Nominal, Full}
+
+---
+
+#### Membership Function Design
+
+**Limited (Trapezoidal)**  
+- Approximate range: 0.0 – 0.45  
+- Rationale:  
+  Represents operating conditions where power must be significantly restricted due to thermal stress, low state of charge, or highly dynamic driving behavior.  
+  A trapezoidal function ensures stable limitation and avoids oscillatory behavior near critical regions.
+
+---
+
+**Nominal (Triangular)**  
+- Approximate range: 0.35 – 0.75  
+- Rationale:  
+  Represents standard operating conditions where a balance between performance, efficiency, and battery longevity is achieved.  
+  The triangular shape reflects that nominal operation is most representative around the center of this range.
+
+---
+
+**Full (Trapezoidal)**  
+- Approximate range: 0.65 – 1.0  
+- Rationale:  
+  Represents conditions where full power availability is permissible, typically characterized by healthy SoC, optimal temperature, and smooth or moderate driving behavior.  
+  Early deactivation of this region prevents unnecessary stress under marginal conditions.
+
+---
+
+#### Design Considerations
+
+- The SOP limit is enforced downstream by power electronics and vehicle control systems.
+- Overlapping membership functions ensure smooth transitions between power levels.
+- Safety-critical overrides remain outside the neuro-fuzzy inference system.
+
 
 ## 5. Scope and Assumptions
 
