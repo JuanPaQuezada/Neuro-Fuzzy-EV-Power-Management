@@ -198,6 +198,62 @@ Rather than commanding power directly, the controller provides a supervisory pow
 - Overlapping membership functions ensure smooth transitions between power levels.
 - Safety-critical overrides remain outside the neuro-fuzzy inference system.
 
+### 4.5 Fuzzy Rule Base
+
+The neuro-fuzzy inference system employs a compact yet expressive rule base designed to supervise battery power availability under varying operational conditions.
+
+The rule formulation follows a conservative design philosophy, where the most restrictive condition dominates the final power decision.
+
+---
+
+#### Rule Structure
+
+Rules are expressed using a Mamdani-type formulation:
+
+IF (SoC is X) AND (Temperature is Y) AND (Driving Style is Z)  
+THEN (SOP Limit is W)
+
+---
+
+#### Critical Protection Rules
+
+These rules ensure battery safety and system longevity and have implicit priority over performance-oriented rules:
+
+- **R1:** IF Temperature is Hot → SOP Limit is Limited  
+- **R2:** IF SoC is Low → SOP Limit is Limited  
+- **R3:** IF Driving Style is Aggressive → SOP Limit is Limited  
+
+---
+
+#### Nominal Operation Rules
+
+- **R4:** IF SoC is Medium AND Temperature is Ideal AND Driving Style is Normal → SOP Limit is Nominal  
+- **R5:** IF SoC is High AND Temperature is Ideal AND Driving Style is Normal → SOP Limit is Nominal  
+
+---
+
+#### Full Power Enablement Rule
+
+- **R6:** IF SoC is High AND Temperature is Ideal AND Driving Style is Economic → SOP Limit is Full  
+
+---
+
+#### Transitional Rules
+
+- **R7:** IF SoC is Medium AND Temperature is Ideal AND Driving Style is Economic → SOP Limit is Nominal  
+- **R8:** IF SoC is High AND Temperature is Cold → SOP Limit is Nominal  
+
+---
+
+#### Inference and Defuzzification
+
+- Inference Method: Mamdani  
+- AND Operator: Minimum  
+- OR Operator: Maximum  
+- Implication: Minimum  
+- Aggregation: Maximum  
+- Defuzzification Method: Centroid of Area
+
 
 ## 5. Scope and Assumptions
 
