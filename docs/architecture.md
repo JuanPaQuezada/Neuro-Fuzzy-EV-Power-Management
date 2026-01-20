@@ -55,6 +55,8 @@ The SoC variable uses a mix of Trapezoidal and Triangular membership functions t
     * **Rationale:** Represents the **Regenerative Braking Saturation** zone.
     * **Design:** The function activates early (at 70%) to allow the system to anticipate saturation. As SoC approaches 100%, the battery's ability to accept current (regenerative braking) drops to zero; the neuro-fuzzy system uses this region to derate input power limits progressively.
 
+The SoC linguistic term "Normal" represents the nominal electrochemical operating window of the battery, rather than a statistical midpoint. This terminology improves interpretability and aligns with industrial BMS conventions.
+
 ### 4.2 Battery Temperature Modeling
 
 **Domain:**  
