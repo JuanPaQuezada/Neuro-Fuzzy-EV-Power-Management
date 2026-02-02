@@ -40,22 +40,34 @@ Its purpose is to:
 
 The input variables are modeled using fuzzy sets designed to reflect physical battery constraints and optimize ANFIS learning convergence (using 3 sets instead of 4 to reduce parameter explosion).
 
-### 4.1 State of Charge (SoC) Design
-The SoC variable uses a mix of Trapezoidal and Triangular membership functions to model distinct operational zones:
+### 4.1 State of Charge (SoC) Modeling
 
-* **Low (0-40%) - Trapezoidal:**
-    * **Rationale:** Represents the **Deep Discharge Protection** zone.
-    * **Design:** A trapezoidal shape saturates at 1 (max membership) between 0-20% to enforce strict power limiting, while the slope from 20-40% ensures a smooth transition to normal operation, preventing control oscillation.
+**Domain:**
+- Range: 0% – 100%
 
-* **Normal (25-85%) - Triangular:**
-    * **Rationale:** Represents the **Chemical Stability** zone.
-    * **Design:** Peaks at **55%**, which typically correlates with optimal internal resistance and minimal thermal stress in Li-ion chemistries. The triangular shape implies that "normality" decreases as the system moves away from this thermodynamic sweet spot.
-
-* **High (70-100%) - Trapezoidal:**
-    * **Rationale:** Represents the **Regenerative Braking Saturation** zone.
-    * **Design:** The function activates early (at 70%) to allow the system to anticipate saturation. As SoC approaches 100%, the battery's ability to accept current (regenerative braking) drops to zero; the neuro-fuzzy system uses this region to derate input power limits progressively.
+The input variables are modeled using fuzzy sets designed to reflect physical battery constraints and optimize ANFIS learning convergence (using 3 sets instead of 4 to reduce parameter explosion). The SoC variable uses a mix of Trapezoidal and Triangular membership functions to model distinct operational zones.
 
 The SoC linguistic term "Normal" represents the nominal electrochemical operating window of the battery, rather than a statistical midpoint. This terminology improves interpretability and aligns with industrial BMS conventions.
+
+#### Linguistic Labels
+- {Low, Normal, High}
+
+#### Membership Function Design
+
+**Low (Trapezoidal)**
+- Approximate range: 0% – 40%
+- **Rationale:** Represents the **Deep Discharge Protection** zone.
+- **Design:** A trapezoidal shape saturates at 1 (max membership) between 0-20% to enforce strict power limiting, while the slope from 20-40% ensures a smooth transition to normal operation, preventing control oscillation.
+
+**Normal (Triangular)**
+- Approximate range: 25% – 85%
+- **Rationale:** Represents the **Chemical Stability** zone.
+- **Design:** Peaks at **55%**, which typically correlates with optimal internal resistance and minimal thermal stress in Li-ion chemistries. The triangular shape implies that "normality" decreases as the system moves away from this thermodynamic sweet spot.
+
+**High (Trapezoidal)**
+- Approximate range: 70% – 100%
+- **Rationale:** Represents the **Regenerative Braking Saturation** zone.
+- **Design:** The function activates early (at 70%) to allow the system to anticipate saturation. As SoC approaches 100%, the battery's ability to accept current (regenerative braking) drops to zero; the neuro-fuzzy system uses this region to derate input power limits progressively.
 
 ### 4.2 Battery Temperature Modeling
 
