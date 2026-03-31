@@ -57,9 +57,12 @@ State of Power Limit (SOP)
 The **Driving Style Index** abstracts current fluctuations and dynamic load profiles into a single normalized variable suitable for learning-based systems.
 
 ### 4.1 Data Preprocessing & Feature Scaling
-To ensure numerical stability during the model training and prevent features with wildly different scales from dominating the learning process, all raw sensor data is scaled to a standardized range of. 
 
-The normalization parameters, like minimum and maximum values, are defined strictly using the training dataset, and this identical scaling transformation is consistently applied to the validation and testing datasets to prevent data leakage. 
+Currently, the data presented in the previous section shows the raw or operational ranges of the variables. However, temperature values, driving metrics, and SoC percentages have drastically different scales and magnitudes. There is a strong scale imbalance: system temperature reaches up to 120 and SoC up to 100, while the driving style index has a maximum of 1. If the data is introduced to the model in this raw format, the model will destabilize. It will assign disproportionate importance to temperature and SoC simply because their numerical values are larger, almost completely ignoring the driving style.
+
+Furthermore, introducing features with vastly differing scales can cause numerical instability during model training. Multiplying very large values by the model's weights can cause them to grow too rapidly, leading to floating-point overflow. Therefore, keeping numbers small and standardized makes it easier to control the learning process. For the data to be genuinely useful for training a predictive model, a mathematical transformation must be applied so that all variables share the same range, ideally between 0 and 1 or -1 and 1 (Kinsley & Kukieła, 2020).
+
+To achieve this, the normalization parameters (such as minimum and maximum values) are defined strictly using the training dataset. This identical scaling transformation is consistently applied to the validation and testing datasets to prevent data leakage. 
 
 The following scaling methods were applied to the system's inputs:
 
@@ -72,7 +75,7 @@ The following scaling methods were applied to the system's inputs:
   * *Formula:* `SoC_norm = SoC / 100`
 
 * **System Temperature (Range: 20–120 °C)**
-  * *Scaling Method:* Min-Max Scaling to stretch the values into a bounded [1] range.
+  * *Scaling Method:* Min-Max Scaling to stretch the values into a bounded `[3]` range.
   * *Formula:* `Temp_norm = (Temp - 20) / (120 - 20) = (Temp - 20) / 100`
 
 ---
@@ -159,3 +162,9 @@ Universidad Autónoma de Aguascalientes (UAA)
 ## 12. Disclaimer
 
 This project is an independent academic and technical exercise and is not affiliated with or endorsed by any vehicle manufacturer.
+
+
+---
+**References**
+
+Kinsley, H., & Kukieła, D. (2020). *Neural Networks from Scratch in Python*. Kinsley Enterprises Inc. https://nnfs.io
