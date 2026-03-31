@@ -1,0 +1,62 @@
+%% Created the expert fuzzy system
+%initializing the fuzzy inference system
+fis=newfis('EV_Power_Managment', 'mamdani');
+%input 1: State of charge SoC 0-100%
+fis=addvar(fis,'input','SoC',[0 100]);
+fis=addMF(fis,'input',1,'low','trapmf',[0 0 20 40]);
+fis=addMF(fis,'input',1,'Normal','trimf',[25 55 85]);
+fis=addMF(fis,'input',1,'High','trapmf',[70 85 100 100]);
+%input 2: Battery Temperature 20-120 c
+fis = addvar(fis, 'input', 'Temperature', [20 120]);
+fis = addmf(fis, 'input', 2, 'Cold', 'trapmf', [20 20 25 35]);
+fis = addmf(fis, 'input', 2, 'Ideal', 'trimf', [30 40 50]);
+fis = addmf(fis, 'input', 2, 'Hot', 'trapmf', [45 60 120 120]);
+%input 3: Driving Style Index 0-1;
+fis = addvar(fis, 'input', 'DrivingStyle', [0 1]);
+fis = addmf(fis, 'input', 3, 'Smooth', 'trapmf', [0 0 0.2 0.4]);
+fis = addmf(fis, 'input', 3, 'Normal', 'trimf', [0.3 0.5 0.7]);
+fis = addmf(fis, 'input', 3, 'Aggressive', 'trapmf', [0.6 0.8 1.0 1.0]);
+
+%output: State of Power SOP limit 0-100%
+fis = addvar(fis, 'output', 'SOP', [0 100]);
+fis = addmf(fis, 'output', 1, 'Limited', 'trapmf', [0 0 25 50]);
+fis = addmf(fis, 'output', 1, 'Nominal', 'trimf', [25 50 75]);
+fis = addmf(fis, 'output', 1, 'Full', 'trapmf', [50 75 100 100]);
+
+% Rules base (Numeric Matrix Format for R2013b)
+% Structure: [In1 In2 In3 Out1 Weight Connection]
+% Connection: 1 for AND, 2 for OR
+rules=[
+    0 3 0 1 1 1;%If Temperature is Hot then SOP is Limited
+    1 0 0 1 1 1;%If SoC is Low then SOP is Limited
+    1 2 0 1 1 1;%If SoC is Low and Temperature is Ideal then SOP is Limited
+    0 3 3 1 1 1;%If Temperature is Hot and DrivingStyle is Aggressive then SOP is Limited
+    2 2 2 2 1 1;%If SoC is Normal and Temperature is Ideal and DrivingStyle is Normal then SOP is Nominal
+    2 2 3 2 1 1;%If SoC is Normal and Temperature is Ideal and DrivingStyle is Aggressive then SOP is Nominal
+    3 2 2 2 1 1;%If SoC is High and Temperature is Ideal and DrivingStyle is Normal then SOP is Nominal 
+    3 2 3 2 1 1;%If SoC is High and Temperature is Ideal and DrivingStyle is Aggressive then SOP is Nominal
+    2 2 1 3 1 1;%If SoC is Normal and Temperature is Ideal and DrivingStyle is Smooth then SOP is Full
+    3 2 1 3 1 1;%If SoC is High and Temperature is Ideal and DrivingStyle is Smooth then SOP is Full
+    3 2 0 2 1 1;%If SoC is High and Temperature is Ideal then SOP is Nominal
+];
+fis=addRule(fis, rules);
+%% Generating synthetic data
+%generating 1000 random samples
+SoC=randi([0,100], 1000, 1);
+temp=randi([20,120],1000,1);
+drive=rand(1000,1);
+
+%% EVALUATION (Connecting the environment with the brain)
+%agruping inputs into a single matriz (N rows x 3 columns)
+inputData=[SoC,temp,drive];
+%evaluating the 1000 scenarios using Mamdani fuzzy rules
+SOP_simulated=evalfis(input, fis);
+
+%plotting the first 100 cases to visualize behavior
+figure;
+plot(1:100, SOP_sumulated(1:100), '-o','LineWidth',1.5,'MarkerSize', 4);
+title('Power limit response SOP - 100 scenarios');
+xlabel('Sample (scenario)');
+ylabel('SOP limit (%)');
+grid on;
+
