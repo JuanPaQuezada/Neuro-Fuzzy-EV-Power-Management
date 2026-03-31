@@ -56,6 +56,25 @@ State of Power Limit (SOP)
 
 The **Driving Style Index** abstracts current fluctuations and dynamic load profiles into a single normalized variable suitable for learning-based systems.
 
+### 4.1 Data Preprocessing & Feature Scaling
+To ensure numerical stability during the model training and prevent features with wildly different scales from dominating the learning process, all raw sensor data is scaled to a standardized range of [1]. 
+
+The normalization parameters (like minimum and maximum values) are defined strictly using the training dataset, and this identical scaling transformation is consistently applied to the validation and testing datasets to prevent data leakage. 
+
+The following scaling methods were applied to the system's inputs:
+
+* **Driving Style Index (Range: 0–1)**
+  * *Scaling Method:* None required (already normalized).
+  * *Formula:* `Index_norm = Index`
+
+* **State of Charge / SoC (Range: 0–100 %)**
+  * *Scaling Method:* Linear scaling by dividing by the maximum absolute value.
+  * *Formula:* `SoC_norm = SoC / 100`
+
+* **System Temperature (Range: 20–120 °C)**
+  * *Scaling Method:* Min-Max Scaling to stretch the values into a bounded [1] range.
+  * *Formula:* `Temp_norm = (Temp - 20) / (120 - 20) = (Temp - 20) / 100`
+
 ---
 
 ## 5. Output Variable
