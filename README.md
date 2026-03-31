@@ -165,6 +165,6 @@ This project is an independent academic and technical exercise and is not affili
 
 
 ---
-**References**
+## 13. References
 
 Kinsley, H., & Kukieła, D. (2020). *Neural Networks from Scratch in Python*. Kinsley Enterprises Inc. https://nnfs.io
