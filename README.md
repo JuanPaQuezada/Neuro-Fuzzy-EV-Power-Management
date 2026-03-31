@@ -75,7 +75,7 @@ The following scaling methods were applied to the system's inputs:
   * *Formula:* `SoC_norm = SoC / 100`
 
 * **System Temperature (Range: 20–120 °C)**
-  * *Scaling Method:* Min-Max Scaling to stretch the values into a bounded `[3]` range.
+  * *Scaling Method:* Min-Max Scaling to stretch the values into a bounded range.
   * *Formula:* `Temp_norm = (Temp - 20) / (120 - 20) = (Temp - 20) / 100`
 
 ---
