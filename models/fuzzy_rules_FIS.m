@@ -61,7 +61,7 @@ ylabel('SOP limit (%)');
 grid on;
 
 %% Data normalization for ANFIS training
-% Avoiding numerical instability by scalingalll features to the [1,0] range
+% Avoiding numerical instability by scaling all features to the [1,0] range
 drive_norm=drive;
 SoC_norm=SoC/100;
 temp_norm=(temp-20)/100;
