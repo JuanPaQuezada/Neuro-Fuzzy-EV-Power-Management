@@ -60,3 +60,22 @@ xlabel('Sample (scenario)');
 ylabel('SOP limit (%)');
 grid on;
 
+%% Data normalization for ANFIS training
+% Avoiding numerical instability by scalingalll features to the [1,0] range
+drive_norm=drive;
+SoC_norm=SoC/100;
+temp_norm=(temp-20)/100;
+SOP_norm=SOP_simulated/100;
+
+%%Final matrix training
+%concatenating normalized features
+%the first columns are the features (inputs), the last one is the target (output)
+trainingData=[SoC_norm, temp_norm,drive_norm,SOP_norm];
+%Performing tensor integtrity and safety checks
+disp('---verifying min-max normalization---');
+disp('Max values per column (must be <=1):');
+disp(max(trainingData));
+disp('Min values per column (must be >=0):');
+disp(min(trainingData));
+%saving dataset to file for loading into the ANFIS app
+save('ev_power_dataset.mat','trainingData');

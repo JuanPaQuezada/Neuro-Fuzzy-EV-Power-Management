@@ -3,9 +3,9 @@
 fis=newfis('EV_Power_Managment', 'mamdani');
 %input 1: State of charge SoC 0-100%
 fis=addvar(fis,'input','SoC',[0 100]);
-fis=addMF(fis,'input',1,'low','trapmf',[0 0 20 40]);
-fis=addMF(fis,'input',1,'Normal','trimf',[25 55 85]);
-fis=addMF(fis,'input',1,'High','trapmf',[70 85 100 100]);
+fis=addmf(fis,'input',1,'Low','trapmf',[0 0 20 40]);
+fis=addmf(fis,'input',1,'Normal','trimf',[25 55 85]);
+fis=addmf(fis,'input',1,'High','trapmf',[70 85 100 100]);
 %input 2: Battery Temperature 20-120 c
 fis = addvar(fis, 'input', 'Temperature', [20 120]);
 fis = addmf(fis, 'input', 2, 'Cold', 'trapmf', [20 20 25 35]);
@@ -39,7 +39,7 @@ rules=[
     3 2 1 3 1 1;%If SoC is High and Temperature is Ideal and DrivingStyle is Smooth then SOP is Full
     3 2 0 2 1 1;%If SoC is High and Temperature is Ideal then SOP is Nominal
 ];
-fis=addRule(fis, rules);
+fis=addrule(fis, rules);
 %% Generating synthetic data
 %generating 1000 random samples
 SoC=randi([0,100], 1000, 1);
@@ -50,13 +50,32 @@ drive=rand(1000,1);
 %agruping inputs into a single matriz (N rows x 3 columns)
 inputData=[SoC,temp,drive];
 %evaluating the 1000 scenarios using Mamdani fuzzy rules
-SOP_simulated=evalfis(input, fis);
+SOP_simulated=evalfis(inputData, fis);
 
 %plotting the first 100 cases to visualize behavior
 figure;
-plot(1:100, SOP_sumulated(1:100), '-o','LineWidth',1.5,'MarkerSize', 4);
+plot(1:100, SOP_simulated(1:100), '-o','LineWidth',1.5,'MarkerSize', 4);
 title('Power limit response SOP - 100 scenarios');
 xlabel('Sample (scenario)');
 ylabel('SOP limit (%)');
 grid on;
 
+%% Data normalization for ANFIS training
+% Avoiding numerical instability by scalingalll features to the [1,0] range
+drive_norm=drive;
+SoC_norm=SoC/100;
+temp_norm=(temp-20)/100;
+SOP_norm=SOP_simulated/100;
+
+%%Final matrix training
+%concatenating normalized features
+%the first columns are the features (inputs), the last one is the target (output)
+trainingData=[SoC_norm, temp_norm,drive_norm,SOP_norm];
+%Performing tensor integtrity and safety checks
+disp('---verifying min-max normalization---');
+disp('Max values per column (must be <=1):');
+disp(max(trainingData));
+disp('Min values per column (must be >=0):');
+disp(min(trainingData));
+%saving dataset to file for loading into the ANFIS app
+save('ev_power_dataset.mat','trainingData')
