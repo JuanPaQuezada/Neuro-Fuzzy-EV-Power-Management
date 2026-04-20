@@ -1,0 +1,44 @@
+clear; clc; close all; %clean memory and windows before anfis training
+
+%load the dataset generate by the preparation script
+load('ev_powr_dataset.mat');
+
+%Generate the initial Takagi sugeno network architecture
+%Membership functions per input with Low/Normal/High, Gaussian bell type
+numMFs=[3 3 3]
+mfType='gbellmf';
+disp('building initial network architecture...');
+initial_fis=genfis1(trainingData,numMFs, mfType);
+
+%Configure and train ANFIS model
+epoch_n=50;%number of learning interations
+disp('Starting ANFIS training...');
+%the 'anfis' function returns the trained network and the error history
+[trained_fis, train_error]=anfis(trainingData, initial_fis, epoch_n);
+
+disp('Training completed successfully');
+
+%RESULTS VISUALIZATION
+%plot 1: learning curve
+figure('Name', 'ANFIS Learning Curve');
+plot(train_error, 'LineWidth', 2, 'Color', '#D95319');
+title('Error Reduction RMSE during Training'):
+xlabel('Epochs');
+ylabel('Root Mean Square Error');
+grid on;
+%plot 2: Mamdani(teacher) vs ANFIS (student)
+%Run the normalized inputs through the newly trained network
+inputs_norm=trainingData(:,1:3);
+expected_output=trainingData(:,4);%mamdani ground truth
+%evaluating
+nn_output=evalfis(inputs_norm, trained_fis);
+
+figure('Name','Mamdani vs ANFIS comparison');
+plot(1:100, expected_output(1:100),'-o','LineWidth',1.5,'DisplayName','Mamdani target');
+hold on;
+plot(1:100, nn_output(1:100),'-x','LineWidth',1.5,'DisplayName','ANFIS prediction');
+title('State of Power SOP limit - first 100 scenarios');
+xlabel('Sample');
+ylabel('Normalized SOP [0-1]');
+legend('Location','best');
+grid on;
