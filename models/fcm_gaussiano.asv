@@ -25,7 +25,7 @@ while iter<max_iter
         %calculate the vectorized gaussian distance for centroid j
         C_expandido=repmat(C(j,:), num_rows,1);
         sigma_expandida=repmat(sigma, num_rows,1);
-        dist_squared=sum(((X-C_expandido)./
+        dist_squared=sum(((X-C_expandido)./sigma_expandida).^2,2);
         U(:,j)=exp(-0.5*dist_squared);
     end
     %Find the cluster with the highest membership for each data point
@@ -62,3 +62,26 @@ colormap('jet');
 colorbar;
 grid on;
 view(45,30);
+
+%% phase 4 building and training custom ANFIS
+disp('Building custom ANFIS architecture from gaussian clusters..');
+fis_custom=newfis('Gaussian_FCM_ANFIS','sugeno');
+fis_custom=addvar(fis_custom,'input','Soc',[0 1]);
+fis_custom=addvar(fis_custom,'input','Temp',[0 1]);
+fis_custom=addvar(fis_custom,'input','Drive',[0 1]);
+for j=1:k
+    fis_custom=addmf(fis_custom,'input',1,['Cluster',num2str(j)],'gaussmf',[sigma(1) C(j,1)]);
+    fis_custom=addmf(fis_custom,'input',2,['Cluster',num2str(j)],'gaussmf',[sigma(2) C(j,2)]);
+    fis_custom=addmf(fis_custom,'input',3,['Cluster',num2str(j)],'gaussmf',[sigma(3) C(j,3)]);
+end
+fis_custom=addvar(fis_custom,'output','SOP',[0 1]);
+for j=1:k
+    fis_custom=addmf(fis_custom,'output',1,['Out' num2str(j)],'constant',0.5);
+end
+rule_list=zeros(k,6);
+for j=1:k
+    rule_list(j,:)=[j,j,j,j,1,1];
+end
+fis_custom=addrule(fis_custom,rule_list);
+training_options=[50,0,0.001,0.9,1.1];
+disp('T);
