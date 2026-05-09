@@ -2,7 +2,7 @@ clear; clc; close all;
 load('ev_power_dataset.mat');
 X=trainingData(:,1:3);
 sigma=std(X);
-k=5;
+k=7;
 epsilon=0.01;%stopping criterion
 
 num_rows=size(X,1);
@@ -62,3 +62,49 @@ colormap('jet');
 colorbar;
 grid on;
 view(45,30);
+
+%% phase 4 building and training custom ANFIS
+disp('Building custom ANFIS architecture from gaussian clusters..');
+fis_custom=newfis('Gaussian_FCM_ANFIS','sugeno');
+fis_custom=addvar(fis_custom,'input','Soc',[0 1]);
+fis_custom=addvar(fis_custom,'input','Temp',[0 1]);
+fis_custom=addvar(fis_custom,'input','Drive',[0 1]);
+for j=1:k
+    fis_custom=addmf(fis_custom,'input',1,['Cluster',num2str(j)],'gaussmf',[sigma(1) C(j,1)]);
+    fis_custom=addmf(fis_custom,'input',2,['Cluster',num2str(j)],'gaussmf',[sigma(2) C(j,2)]);
+    fis_custom=addmf(fis_custom,'input',3,['Cluster',num2str(j)],'gaussmf',[sigma(3) C(j,3)]);
+end
+fis_custom=addvar(fis_custom,'output','SOP',[0 1]);
+for j=1:k
+    fis_custom=addmf(fis_custom,'output',1,['Out' num2str(j)],'constant',0.5);
+end
+rule_list=zeros(k,6);
+for j=1:k
+    rule_list(j,:)=[j,j,j,j,1,1];
+end
+fis_custom=addrule(fis_custom,rule_list);
+training_options=[50,0,0.001,0.9,1.1];
+disp('Initialization ANFIS training with 5 gaussian rules');
+[trained_custom_fis, custom_error]=anfis(trainingData,fis_custom,training_options);
+disp('training completed');
+
+%% phase 5 validation and comparison
+figure('Name', 'Custom FCM ANFIS Performance');
+subplot(2,1,1);
+plot(custom_error, 'LineWidth', 2, 'Color', [0.494,0.184,0.556]);
+title(['Reducción del Error (RMSE) - ',num2str(k), ' Reglas Gaussianas']);
+xlabel('Épocas');
+ylabel('RMSE');
+grid on;
+inputs_norm = trainingData(:, 1:3);
+expected_output = trainingData(:, 4);
+custom_nn_output = evalfis(inputs_norm, trained_custom_fis);
+subplot(2,1,2);
+plot(1:100, expected_output(1:100), '-o', 'LineWidth', 1.5, 'DisplayName', 'Mamdani (Objetivo)');
+hold on;
+plot(1:100, custom_nn_output(1:100), '-*', 'LineWidth', 1.5, 'DisplayName', 'FCM-Gaussiano ANFIS');
+title('SOP Predictivo: Comparación de los primeros 100 escenarios');
+xlabel('Muestra');
+ylabel('Normalized SOP [0-1]');
+legend('Location', 'best');
+grid on;
