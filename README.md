@@ -106,6 +106,18 @@ The development is carried out in two stages:
 * Learning of premise and consequent parameters from data
 * Improved smoothness and adaptability compared to the baseline model
 
+### 6.3 Architecture Evolution & Optimization (Neuro-Fuzzy)
+
+During development, the Takagi-Sugeno ANFIS model underwent a significant architectural optimization to ensure its viability for embedded hardware with limited memory and processing power:
+
+* **Baseline Model (Grid Partitioning):** The initial approach utilized grid partitioning (`genfis1`) with 3 membership functions per input variable. This generated a dense system of **27 mathematical rules** ($3 \times 3 \times 3$). While functional, evaluating 27 polynomial equations hundreds of times per second represents an unnecessary computational burden for a BMS microcontroller.
+* **Architectural Improvement (Gaussian Fuzzy c-Means):** To reduce the memory footprint, the forced grid was replaced with a data-driven clustering approach using **Fuzzy c-Means (FCM)**. Instead of creating rules for all theoretical combinations, FCM finds the centers of gravity of the data, placing rules only in the actual operational zones of the vehicle. To further optimize this process, a **Gaussian distribution improvement** was implemented (inspired by K-Means centroid updates), drastically reducing the calculations required for the algorithm to converge.
+* **Hyperparameter Tuning & Training:** * **Cluster Optimization (k=7):** The algorithm successfully compressed 1,000 chaotic scenarios into **7 fundamental operational states**. This gave the neural network enough degrees of freedom to accurately track the high peaks of the State of Power (SOP) without falling into overfitting, capturing the dynamics with only 7 rules instead of 27.
+  * **Learning Rate Stabilization:** Initial training iterations showed severe "sawtooth" oscillations in the Root Mean Square Error (RMSE) curve due to gradient descent overshooting. The initial *Step Size* was manually constrained to **0.001**, resulting in a perfectly smooth and stable learning curve.
+
+**Result:** The highly optimized Neuro-Fuzzy inference engine executes fractions of a millisecond faster, occupying significantly less Flash memory, all while maintaining highly accurate predictive tracking of the battery's power limits.
+<img width="561" height="420" alt="GaussianFCM_Clusters3D" src="https://github.com/user-attachments/assets/e20e4f4f-99ef-40b1-957e-4e9e02e6810a" />
+
 ---
 
 ## 7. Validation Approach
