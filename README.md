@@ -183,3 +183,7 @@ This project is an independent academic and technical exercise and is not affili
 ## 13. References
 
 Kinsley, H., & Kukieła, D. (2020). *Neural Networks from Scratch in Python*. Kinsley Enterprises Inc. https://nnfs.io
+
+Geron, A. (2017). Hands-on machine learning with scikit-learn and TensorFlow. O’Reilly Media.
+
+
