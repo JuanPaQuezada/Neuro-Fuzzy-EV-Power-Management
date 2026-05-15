@@ -119,6 +119,7 @@ During development, the Takagi-Sugeno ANFIS model underwent a significant archit
 <div style="display: flex; justify-content: center;">
             <img  width="400" height="300" alt="GaussianFCM_Clusters3D" src="https://github.com/user-attachments/assets/e20e4f4f-99ef-40b1-957e-4e9e02e6810a" />
 </div>
+
 ---
 
 ## 7. Validation Approach
