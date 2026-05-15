@@ -116,7 +116,8 @@ During development, the Takagi-Sugeno ANFIS model underwent a significant archit
   * **Learning Rate Stabilization:** Initial training iterations showed severe "sawtooth" oscillations in the Root Mean Square Error (RMSE) curve due to gradient descent overshooting. The initial *Step Size* was manually constrained to **0.001**, resulting in a perfectly smooth and stable learning curve.
 
 **Result:** The highly optimized Neuro-Fuzzy inference engine executes fractions of a millisecond faster, occupying significantly less Flash memory, all while maintaining highly accurate predictive tracking of the battery's power limits.
-<img width="561" height="420" alt="GaussianFCM_Clusters3D" src="https://github.com/user-attachments/assets/e20e4f4f-99ef-40b1-957e-4e9e02e6810a" />
+
+<img aling="center" width="500" height="300" alt="GaussianFCM_Clusters3D" src="https://github.com/user-attachments/assets/e20e4f4f-99ef-40b1-957e-4e9e02e6810a" />
 
 ---
 
