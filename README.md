@@ -139,11 +139,11 @@ This approach reflects early-stage development practices commonly used before ha
 
 * [x] Problem formulation
 * [x] Definition of system variables
-* [ ] Membership function design
-* [ ] Rule base implementation
-* [ ] ANFIS training
-* [ ] Performance evaluation
-* [ ] Results analysis and visualization
+* [x] Membership function design (Optimized via Gaussian FCM)
+* [x] Rule base implementation (Reduced to 7 data-driven rules)
+* [x] ANFIS training (Completed without overfitting)
+* [x] Performance evaluation
+* [ ] Results analysis and visualization (In progress)
 
 ---
 
