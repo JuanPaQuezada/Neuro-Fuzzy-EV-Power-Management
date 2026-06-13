@@ -186,4 +186,7 @@ Kinsley, H., & Kukieła, D. (2020). *Neural Networks from Scratch in Python*. Ki
 
 Geron, A. (2017). Hands-on machine learning with scikit-learn and TensorFlow. O’Reilly Media.
 
+(S/f). Mathworks.com. Recuperado el 13 de junio de 2026, de https://la.mathworks.com/products/matlab/matlab-and-python.html
+
+
 
