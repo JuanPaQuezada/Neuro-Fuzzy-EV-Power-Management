@@ -108,3 +108,18 @@ xlabel('Muestra');
 ylabel('Normalized SOP [0-1]');
 legend('Location', 'best');
 grid on;
+
+%% phase 6 parameter export to csv
+disp('Exporting neural network parameters to CSV...');
+%export the centroid matrix C
+csvwrite('fcm_centroids.csv',C);
+%export the standard deviation vector sigma
+csvwrite('fcm_sigmas.csv',sigma);
+%extract and export the optimized output weights SOP
+output_weights=zeros(k,1);
+for j=1:k
+    %Extract the parameter from the output membership function of each rule
+    output_weights(j)=getfis(trained_custom_fis, 'output',1,'mf',j,'params');
+end
+csvwrite('anfis_weights.csv',output_weights);
+disp('Export completed');
